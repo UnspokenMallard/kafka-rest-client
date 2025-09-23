@@ -136,6 +136,8 @@ public class KafkaProducerService {
                             Map<String, Object> offsetInfo = new HashMap<>();
                             offsetInfo.put("partition", metadata.partition());
                             offsetInfo.put("offset", metadata.offset());
+                            offsetInfo.put("error_code", null);
+                            offsetInfo.put("error", null);
                             offsets.add(offsetInfo);
                         } catch (Exception e) {
                             logger.error("Error getting record metadata", e);
