@@ -38,6 +38,36 @@ public class KafkaConnectionPool {
     
     @Value("${kafka.client.rack:}")
     private String defaultClientRack;
+
+    @Value("${kafka.enable.auto.commit:false}")
+    private String enableAutoCommit;
+
+    @Value("${kafka.auto.offset.reset:earliest}")
+    private String autoOffsetReset;
+
+    @Value("${kafka.fetch.max.wait.ms:500}")
+    private String fetchMaxWaitMs;
+
+    @Value("${kafka.fetch.min.bytes:1}")
+    private String fetchMinBytes;
+
+    @Value("${kafka.max.poll.records:500}")
+    private String maxPollRecords;
+
+    @Value("${kafka.request.timeout.ms:10000}")
+    private String requestTimeoutMs;
+
+    @Value("${kafka.session.timeout.ms:20000}")
+    private String sessionTimeoutMs;
+
+    @Value("${kafka.heartbeat.interval.ms:5000}")
+    private String heartbeatIntervalMs;
+
+    @Value("${kafka.connections.max.idle.ms:300000}")
+    private String connectionsMaxIdleMs;
+
+    @Value("${kafka.metadata.max.age.ms:180000}")
+    private String metadataMaxAgeMs;
     
     
     // Pool configuration
@@ -155,23 +185,22 @@ public class KafkaConnectionPool {
     private KafkaConsumer<String, byte[]> createConsumer(String clientRack) {
         Properties props = new Properties();
 
-        // Use Spring Boot injected property
         props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "pooled-consumer-group-" + clientRack);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArrayDeserializer");
-        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
-        // Performance defaults
-        props.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, "500");
-        props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, "1");
-        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "500");
-        props.put(CommonClientConfigs.REQUEST_TIMEOUT_MS_CONFIG, "10000");
-        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "20000");
-        props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, "5000");
-        props.put(CommonClientConfigs.CONNECTIONS_MAX_IDLE_MS_CONFIG, "300000");
-        props.put(ConsumerConfig.METADATA_MAX_AGE_CONFIG, "180000");
+        // From er-kafka-rest.properties
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, enableAutoCommit);
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset);
+        props.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, fetchMaxWaitMs);
+        props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, fetchMinBytes);
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecords);
+        props.put(CommonClientConfigs.REQUEST_TIMEOUT_MS_CONFIG, requestTimeoutMs);
+        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, sessionTimeoutMs);
+        props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, heartbeatIntervalMs);
+        props.put(CommonClientConfigs.CONNECTIONS_MAX_IDLE_MS_CONFIG, connectionsMaxIdleMs);
+        props.put(ConsumerConfig.METADATA_MAX_AGE_CONFIG, metadataMaxAgeMs);
 
         // Client ID: use default prefix, always append unique suffix to avoid collisions
         String clientIdPrefix = ("pooled-consumer-" + clientRack);

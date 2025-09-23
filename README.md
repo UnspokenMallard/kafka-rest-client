@@ -302,8 +302,6 @@ kafka-offset-reader/
 │   ├── KafkaReaderService.java                  # Kafka read operations with connection pooling
 │   ├── KafkaProducerService.java                # Kafka producer service with rack-aware routing
 │   ├── KafkaConnectionPool.java                 # Connection pooling for high-performance consumers
-│   └── config/
-│       └── ExternalConfigLoader.java            # ER external configuration loader
 ├── src/main/resources/
 │   └── application.properties                   # Default application configuration
 ├── etc/kafka-rest/
