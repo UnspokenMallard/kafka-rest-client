@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class KafkaReaderController {
-    
+
     @Autowired
     private KafkaReaderService kafkaReaderService;
-    
-    @Autowired 
+
+    @Autowired
     private KafkaConnectionPool connectionPool;
 
     @Autowired
@@ -64,8 +64,10 @@ public class KafkaReaderController {
         } catch (Exception ignore) {}
         String now = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss,SSS")
                 .format(java.time.LocalDateTime.now());
-        System.out.printf("[%s] INFO \"%s %s%s\" %d %d%n",
+        String clientIp = request.getRemoteAddr();
+        System.out.printf("[%s] INFO %s %s %s%s %d %d%n",
                 now,
+                clientIp,
                 request.getMethod(),
                 request.getRequestURI(),
                 request.getQueryString() != null ? "?" + request.getQueryString() : "",
