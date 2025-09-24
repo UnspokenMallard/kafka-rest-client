@@ -86,6 +86,71 @@ GET /monitoring/pool-stats
 Returns connection pool statistics and health information.
 
 
+## Local Setup
+
+### Prerequisites
+
+- Java 11 (OpenJDK/Temurin)
+- Maven 3.8+
+- A reachable Kafka broker/cluster
+
+Check tools:
+```bash
+java -version
+mvn -v
+```
+
+### Kafka for Local Development
+
+You can either point to an existing Kafka cluster or run Kafka locally.
+
+- Option A (quick start): Update `src/main/resources/application.properties` to use a single local broker:
+```properties
+kafka.bootstrap.servers=localhost:9092
+```
+
+Run a single-broker Kafka via Docker:
+```bash
+cat > docker-compose.kafka.yml <<'YAML'
+services:
+  kafka:
+    image: bitnami/kafka:3.7
+    environment:
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@localhost:9093
+      - KAFKA_CFG_NODE_ID=1
+    ports:
+      - "9092:9092"
+YAML
+docker compose -f docker-compose.kafka.yml up -d
+```
+
+- Option B: Use your existing cluster and keep `kafka.bootstrap.servers=localhost:9092, localhost:9094, localhost:9096` or point to your brokers.
+
+### Build and Run
+
+```bash
+# Build (patched Kafka client JAR auto-installs)
+mvn clean package -DskipTests
+
+# Run in development
+mvn spring-boot:run
+
+# Or run the JAR
+java -jar target/kafka-offset-reader-1.0.0.jar
+```
+
+To run with an external config on Linux/macOS:
+```bash
+java -jar target/kafka-offset-reader-1.0.0.jar ./etc/kafka-rest/er-kafka-rest.properties
+```
+
+For remote debugging and troubleshooting see `DEBUGGING.md`.
+
 ### Running the Application
 
 #### Option 1: Default Configuration
